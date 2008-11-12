@@ -1,0 +1,17 @@
+History.txt
+Manifest.txt
+PostInstall.txt
+README
+README.rdoc
+Rakefile
+bin/ghostjour
+lib/ghostjour/cli.rb
+lib/hostjour.rb
+script/console
+script/destroy
+script/generate
+spec/ghostjour_cli_spec.rb
+spec/hostjour_spec.rb
+spec/spec.opts
+spec/spec_helper.rb
+tasks/rspec.rake

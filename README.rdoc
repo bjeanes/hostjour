@@ -12,7 +12,13 @@ This is an idea I am playing around with for RailsCamp 08 to help sharing Rails 
 
 == SYNOPSIS:
 
-  TODO
+Ideally this command will simply be a daemon that runs on all machines (at RailsCamp). The daemon will be responsible for both maintaining and advertising a list of all local domains, and searching for remote domains and adding it to the local list.
+  
+In theory:
+  
+    `hostjour start` # => "Starting service ..."
+    `hostjour add myapp.local` # => "Adding myapp.local to broadcast list for this IP"
+    `hostjour list` # => would list all running apps and who is running them
 
 == REQUIREMENTS:
 

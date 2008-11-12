@@ -1,32 +1,33 @@
 = HOSTJOUR
 
-* FIX (url)
+http://github.com/bjeanes/hostjour
 
 == DESCRIPTION:
 
-FIX (describe your package)
+This is an idea I am playing around with for RailsCamp 08 to help sharing Rails apps over bonjour on a local network. Unlike appjour, this will avoid having to use different ports and having a separate mongrel instance up for each of your apps. This setup is ideal for developers using Passenger in the development environment (like me)
 
 == FEATURES/PROBLEMS:
 
-* FIX (list of features or problems)
+* Advertise all local host names setup using ghost (http://github.com/bjeanes/ghost) over the network with your primary interface IP
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+  TODO
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+* dnssd
+* ghost
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+* sudo gem install dnssd ghost hostjour
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2008 FIXME full name
+Copyright (c) 2008 Bodaniel Jeanes
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

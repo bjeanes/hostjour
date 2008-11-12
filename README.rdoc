@@ -1,4 +1,4 @@
-= hostjour
+= HOSTJOUR
 
 * FIX (url)
 

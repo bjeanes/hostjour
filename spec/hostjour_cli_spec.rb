@@ -1,10 +1,10 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-require 'ghostjour/cli'
+require 'hostjour/cli'
 
-describe Ghostjour::CLI, "execute" do
+describe Hostjour::CLI, "execute" do
   before(:each) do
     @stdout_io = StringIO.new
-    Ghostjour::CLI.execute(@stdout_io, [])
+    Hostjour::CLI.execute(@stdout_io, [])
     @stdout_io.rewind
     @stdout = @stdout_io.read
   end

@@ -1,6 +1,6 @@
 require 'optparse'
 
-module Ghostjour
+module Hostjour
   class CLI
     def self.execute(stdout, arguments=[])
 
@@ -36,7 +36,7 @@ module Ghostjour
       path = options[:path]
 
       # do stuff
-      puts "To update this executable, look in lib/ghostjour/cli.rb"      
+      puts "To update this executable, look in lib/hostjour/cli.rb"      
     end
   end
 end

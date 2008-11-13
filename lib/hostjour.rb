@@ -48,7 +48,8 @@ module Hostjour
   end
   
   def self.get_ip
-    "127.0.0.1"
+    # Hard code to airport for now
+    @ip ||= `ifconfig en1`.match(/inet ((?:\d{1,3}\.){3}\d{1,3})/)[1]
   end
 end
 

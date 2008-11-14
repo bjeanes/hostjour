@@ -6,6 +6,10 @@ require 'ghost'
 require 'dnssd'
 
 module Hostjour
+  Host = Struct.new(:hostname, :ip, :identifier)
+  
+  @hosts = []
+  
   VERSION = '0.0.1'
   
   SERVICE = "_hostjour._tcp"
@@ -13,16 +17,18 @@ module Hostjour
   def self.list
     servers = {}
     service = DNSSD.browse(SERVICE) do |reply|
-      servers[reply.name] ||= reply
+      servers[reply.name.chomp] ||= reply
     end
     STDERR.puts "Searching for servers (1 second)"
     # Wait for something to happen
-    sleep 1
+    sleep 5
     service.stop
-    servers.each { |string,obj|
-      name, port = string.split ":" 
-      STDERR.puts "Found hostname for '#{name}'"
-    }
+    puts "servers found: #{servers.size}"
+    servers.each do |string,obj|
+      DNSSD.resolve(obj.name, obj.type, obj.domain) do |rr|
+        puts rr.methods(false)
+      end
+    end
   end
   
   def self.advertise(identifier = ENV["USER"])
@@ -32,7 +38,7 @@ module Hostjour
     tr["primary_ip"] = get_ip
     tr["hostnames"] = []
     
-    Host.list.each do |host|
+    ::Host.list.each do |host|
       if host.ip == '127.0.0.1' || host.ip == get_ip
         tr["hostnames"] << host.hostname
       end
@@ -50,8 +56,10 @@ module Hostjour
   def self.get_ip
     # Hard code to airport for now
     @ip ||= `ifconfig en1`.match(/inet ((?:\d{1,3}\.){3}\d{1,3})/)[1]
+  rescue
+    '0.0.0.0'
   end
 end
 
-Hostjour.advertise
-sleep
+# Hostjour.advertise
+# sleep

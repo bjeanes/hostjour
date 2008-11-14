@@ -19,14 +19,16 @@ module Hostjour
     service = DNSSD.browse(SERVICE) do |reply|
       servers[reply.name.chomp] ||= reply
     end
-    STDERR.puts "Searching for servers (1 second)"
+    STDERR.puts "Searching for servers (5 second)"
     # Wait for something to happen
     sleep 5
     service.stop
     puts "servers found: #{servers.size}"
     servers.each do |string,obj|
       DNSSD.resolve(obj.name, obj.type, obj.domain) do |rr|
-        puts rr.methods(false)
+        rr.text_record["hostnames"].split(',').each do |host|
+          Host.add(host, `resolveip -s #{obj.target.split('.:').first}`)
+        end
       end
     end
   end
@@ -44,7 +46,7 @@ module Hostjour
       end
     end
     
-    tr["hostnames"] = tr["hostnames"].join(',')
+    tr["hostnames"] = tr["hostnames"].uniq.join(',')
     
     name = `hostname`.gsub('.local','') || tr["identifier"]
     

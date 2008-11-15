@@ -8,12 +8,11 @@ require 'dnssd'
 module Hostjour
   Host = Struct.new(:hostname, :ip, :identifier)
   
-  @hosts = []
-  
   VERSION = '0.0.1'
   SERVICE = "_hostjour._tcp"
   
   def self.list
+    i = 0
     servers = {}
     service = DNSSD.browse(SERVICE) do |reply|
       servers[reply.name.chomp] ||= reply
@@ -25,6 +24,9 @@ module Hostjour
     puts "servers found: #{servers.size}"
     servers.each do |string,obj|
       DNSSD.resolve(obj.name, obj.type, obj.domain) do |rr|
+        puts i += 1
+        p rr
+        p rr.text_record
         rr.text_record["hostnames"].split(',').each do |host|
           # don't add own hostnames
           unless rr.text_record["seed"] == @seed

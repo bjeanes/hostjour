@@ -11,7 +11,6 @@ module Hostjour
   @hosts = []
   
   VERSION = '0.0.1'
-  
   SERVICE = "_hostjour._tcp"
   
   def self.list
@@ -27,37 +26,48 @@ module Hostjour
     servers.each do |string,obj|
       DNSSD.resolve(obj.name, obj.type, obj.domain) do |rr|
         rr.text_record["hostnames"].split(',').each do |host|
-          Host.add(host, `resolveip -s #{obj.target.split('.:').first}`)
+          # don't add own hostnames
+          unless rr.text_record["seed"] == @seed
+            @@hosts ||= []
+            @@hosts << Hostjour::Host.add(host, `resolveip -s #{rr.target.split(/\.?\:/).first}`, rr.text_record["identifier"])
+          end
         end
       end
     end
+    nil
   end
   
   def self.advertise(identifier = ENV["USER"])
-    tr = DNSSD::TextRecord.new
-    tr["version"] = VERSION
-    tr["identifier"] = identifier
-    tr["primary_ip"] = get_ip
-    tr["hostnames"] = []
-    
-    ::Host.list.each do |host|
-      if host.ip == '127.0.0.1' || host.ip == get_ip
-        tr["hostnames"] << host.hostname
+    ct = Thread.current
+    @@advertising_thread ||= Thread.new do
+      tr = DNSSD::TextRecord.new
+      tr["seed"] = @seed ||= rand(999999999).to_s
+      tr["version"] = VERSION
+      tr["identifier"] = identifier
+      tr["primary_ip"] = get_ip
+      tr["hostnames"] = []
+  
+      ::Host.list.each do |host|
+        if host.ip == '127.0.0.1' || host.ip == get_ip
+          tr["hostnames"] << host.hostname
+        end
+      end
+  
+      tr["hostnames"] = tr["hostnames"].uniq.join(',')
+  
+      name = `hostname`.gsub('.local','') || tr["identifier"]
+  
+      # Some random port for now
+      DNSSD.register(name, SERVICE, "local", 9682, tr.encode) do |reply|
       end
     end
     
-    tr["hostnames"] = tr["hostnames"].uniq.join(',')
-    
-    name = `hostname`.gsub('.local','') || tr["identifier"]
-    
-    # Some random port for now
-    DNSSD.register(name, SERVICE, "local", 9682, tr.encode) do |reply|
-    end
+    ct.run
   end
   
   def self.get_ip
     # Hard code to airport for now
-    @ip ||= `ifconfig en1`.match(/inet ((?:\d{1,3}\.){3}\d{1,3})/)[1]
+    @@ip ||= `ifconfig en1`.match(/inet ((?:\d{1,3}\.){3}\d{1,3})/)[1]
   rescue
     '0.0.0.0'
   end
